@@ -22,7 +22,7 @@ pub fn main() !void {
             was_prz = (prng.random().int(u64) % 4 == 0);
         }
 
-        if (attempt % 100_000 == 0) {
+        if (attempt % (ATTEMPTS / 1_000) == 0) {
             try print("- Attempt: {:12}\r", .{attempt});
         }
 

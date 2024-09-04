@@ -20,7 +20,7 @@ pub fn main() !void {
             items[idx] += 1;
         }
 
-        if (attempt % 100_000 == 0) {
+        if (attempt % (ATTEMPTS / 1_000) == 0) {
             try print("- Attempt: {:12}\r", .{attempt});
         }
 
