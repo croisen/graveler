@@ -28,8 +28,12 @@ IDK what to put here this is my first time participating in something like this
 
 ## Here is my zig rewrite results
 
-Measured via perf stat if that is fine
 ![Zig Rewrite.png](results/Graveler%20Rewrite.png)
+
+## Zig rewrite with multithreading
+
+Not that big of a time save that I was hoping for but an improvement nonetheless
+![Zig Rewrite MT.png](results/Graveler%20Rewrite%20MT.png)
 
 ## For the other goal of the video
 
