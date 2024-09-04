@@ -12,13 +12,7 @@ pub fn main() !void {
     var highest: u8 = 0;
     var items: [4]u8 = undefined;
 
-    try print(
-        "Starting {} iterations of {} dice rolls to see how many lands on 1\n",
-        .{
-            ATTEMPTS,
-            ROLLS,
-        },
-    );
+    try print("Starting {} iterations of {} dice rolls to see how many lands on 1\n", .{ ATTEMPTS, ROLLS });
     for (1..ATTEMPTS + 1) |attempt| {
         @memset(&items, 0);
         for (0..ROLLS) |_| {
@@ -32,13 +26,7 @@ pub fn main() !void {
 
         if (items[0] > highest) {
             highest = items[0];
-            try print(
-                "- Attempt: {:12} | Rolls: {any:3}\r\n",
-                .{
-                    attempt,
-                    items,
-                },
-            );
+            try print("- Attempt: {:12} | Rolls: {any:3}\r\n", .{ attempt, items });
         }
     }
 
