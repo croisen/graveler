@@ -25,9 +25,17 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    const straight_prz_procs_mt = b.addExecutable(.{
+        .name = "graveler-prz-procs-mt",
+        .root_source_file = b.path("src/straight_prz_procs_multi_threading.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
     b.installArtifact(graveler_rewrite);
     b.installArtifact(graveler_rewrite_mt);
     b.installArtifact(straight_prz_procs);
+    b.installArtifact(straight_prz_procs_mt);
 
     const rewrite_run_cmd = b.addRunArtifact(graveler_rewrite);
     rewrite_run_cmd.step.dependOn(b.getInstallStep());
@@ -47,12 +55,21 @@ pub fn build(b: *std.Build) void {
         new_run_cmd.addArgs(args);
     }
 
+    const new_run_cmd_mt = b.addRunArtifact(straight_prz_procs_mt);
+    new_run_cmd_mt.step.dependOn(b.getInstallStep());
+    if (b.args) |args| {
+        new_run_cmd_mt.addArgs(args);
+    }
+
     const rewrite_run_step = b.step("run-rewrite", "Run the rewrite from python to zig");
     rewrite_run_step.dependOn(&rewrite_run_cmd.step);
 
-    const rewrite_run_step_mt = b.step("run-rewrite-mt", "Run the rewrite from python to zig (multi-threading ver)");
+    const rewrite_run_step_mt = b.step("run-rewrite-mt", "Run the rewrite from python to zig (multi-threading)");
     rewrite_run_step_mt.dependOn(&rewrite_run_cmd_mt.step);
 
     const new_run_step = b.step("run-prz-procs", "Run the app with straight paralysis proc counts");
     new_run_step.dependOn(&new_run_cmd.step);
+
+    const new_run_step_mt = b.step("run-prz-procs-mt", "Run the app with straight paralysis proc counts (multi-threading)");
+    new_run_step_mt.dependOn(&new_run_cmd_mt.step);
 }

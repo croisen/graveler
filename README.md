@@ -28,16 +28,21 @@ IDK what to put here this is my first time participating in something like this
 
 ## Here is my zig rewrite results
 
-![Zig Rewrite.png](results/Graveler%20Rewrite.png)
+![IDK.png](results/ST%20-%20Graveler%20Rewrite%20-%201.png)
 
 ## Zig rewrite with multithreading
 
 Not that big of a time save that I was hoping for but an improvement nonetheless
-![Zig Rewrite MT.png](results/Graveler%20Rewrite%20MT.png)
+![IDK.png](results/MT%20-%20Graveler%20Rewrite%20-%201.png)
 
 ## For the other goal of the video
 
 Another program compiled here is how many straight paralysis procs can happen
 in an attempt if the paralysis proc has a 25% chance to happen. Iterated over
 1000000000 times
-![Straight PRZ Procs.png](results/Straight%20PRZ%20Procs.png)
+![IDK.png](results/ST%20-%20Straight%20PRZ%20Procs%20-%201.png)
+
+## Trying the straight paralysis procs with multithreading
+
+Pfft
+![IDK.png](results/MT%20-%20Straight%20PRZ%20Procs%20-%201.png)
