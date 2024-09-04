@@ -2,25 +2,6 @@ const std = @import("std");
 
 const ATTEMPTS = 1_000_000_000;
 
-const Highest = struct {
-    lock: std.Thread.RwLock = .{},
-    count: u64 = 0,
-
-    fn set(self: *Highest, c: u64) void {
-        self.lock.lock();
-        defer self.lock.unlock();
-
-        self.count = c;
-    }
-
-    fn get(self: *Highest) u64 {
-        self.lock.lockShared();
-        defer self.lock.unlockShared();
-
-        return self.count;
-    }
-};
-
 pub fn main() !void {
     const start = try std.time.Instant.now();
 
@@ -36,20 +17,31 @@ pub fn main() !void {
     var handles = std.ArrayList(std.Thread).init(gpa.allocator());
     defer handles.deinit();
 
-    var highest: Highest = .{};
+    var highest = try std.ArrayList(u64).initCapacity(gpa.allocator(), cpu_count);
+    highest.expandToCapacity();
+    @memset(highest.items, 0);
+    defer highest.deinit();
+
     try print("Starting {} battles to see how many paralysis procs in a row we can get\r\n", .{ATTEMPTS});
     try print("Now doing {} iterations per thread (total: {} threads)\r\n", .{ attempts_per_thread, cpu_count });
 
     for (0..cpu_count) |cpu|
-        try handles.insert(cpu, try std.Thread.spawn(.{}, loop, .{ cpu, attempts_per_thread, &highest }));
+        try handles.insert(cpu, try std.Thread.spawn(.{}, loop, .{ cpu, attempts_per_thread, &highest.items }));
 
     for (handles.items) |handle|
         handle.join();
 
+    var highest_roll: u64 = 0;
+    for (highest.items) |h| {
+        if (highest_roll < h) {
+            highest_roll = h;
+        }
+    }
+
     const end = try std.time.Instant.now();
     // It was in nano seconds soo
     const elapsed = @as(f128, @floatFromInt(end.since(start))) / @as(f128, @floatFromInt(1_000_000_000));
-    try print("\nHighest straight paralysis proc count: {}\r\n", .{highest.get()});
+    try print("\nHighest straight paralysis proc count: {}\r\n", .{highest_roll});
     try print("Done! {d:9.5} seconds has elapsed\r\n", .{elapsed});
 }
 
@@ -62,7 +54,7 @@ pub fn print(comptime format: []const u8, args: anytype) !void {
     try bw.flush();
 }
 
-pub fn loop(thread_id: u64, attempt_count: u64, highest: *Highest) !void {
+pub fn loop(thread_id: u64, attempt_count: u64, highest: *[]u64) !void {
     const seed: u64 = @bitCast(std.time.timestamp());
     var prng = std.rand.DefaultPrng.init(seed * (thread_id + 1));
 
@@ -77,12 +69,12 @@ pub fn loop(thread_id: u64, attempt_count: u64, highest: *Highest) !void {
             was_prz = (prng.random().int(u64) % 4 == 0);
         }
 
-        if (attempt % 100_000 == 0) {
+        if (attempt % (attempt_count / 1_000) == 0) {
             try print("T{:03} - Attempt: {:12}\r", .{ thread_id, attempt });
         }
 
-        if (highest.get() < straight_prz_procs) {
-            highest.set(straight_prz_procs);
+        if (highest.*[thread_id] < straight_prz_procs) {
+            highest.*[thread_id] = straight_prz_procs;
             try print("T{:03} - Attempt: {:12} | Highest Straight Paralysis Procs: {}\r\n", .{ thread_id, attempt, straight_prz_procs });
         }
     }
