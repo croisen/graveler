@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const ATTEMPTS = 1_000_000_000;
+const ATTEMPTS: u64 = 1_000_000_000;
 
 pub fn main() !void {
     const start = try std.time.Instant.now();
@@ -10,8 +10,13 @@ pub fn main() !void {
 
     var highest: u64 = 0;
 
-    try print("Starting {} battles to see how many paralysis procs in a row we can get\n", .{ATTEMPTS});
-    for (1..ATTEMPTS + 1) |attempt| {
+    try print(
+        "Starting {} battles to see how many paralysis procs in a row we can get\n",
+        .{
+            ATTEMPTS,
+        },
+    );
+    for (0..ATTEMPTS) |attempt| {
         var straight_prz_procs: u64 = 0;
 
         // See if the random 0-3 (inclusive) lands on a 0
@@ -23,18 +28,30 @@ pub fn main() !void {
         }
 
         if (attempt % (ATTEMPTS / 1_000) == 0) {
-            try print("- Attempt: {:12}\r", .{attempt});
+            try print("- Attempt: {:12}\r", .{attempt + 1});
         }
 
         if (highest < straight_prz_procs) {
             highest = straight_prz_procs;
-            try print("- Attempt: {:12} | Highest Straight Paralysis Procs: {}\r\n", .{ attempt, straight_prz_procs });
+            try print(
+                "- Attempt: {:12} | Highest Straight Paralysis Procs: {}\r\n",
+                .{
+                    attempt + 1,
+                    straight_prz_procs,
+                },
+            );
         }
     }
 
     const end = try std.time.Instant.now();
     // It was in nano seconds soo
-    const elapsed = @as(f128, @floatFromInt(end.since(start))) / @as(f128, @floatFromInt(1_000_000_000));
+    const elapsed = @as(
+        f128,
+        @floatFromInt(end.since(start)),
+    ) / @as(
+        f128,
+        @floatFromInt(1_000_000_000),
+    );
     try print("\nHighest straight paralysis proc count: {}\r\n", .{highest});
     try print("Done! {d:9.5} seconds has elapsed\r\n", .{elapsed});
 }

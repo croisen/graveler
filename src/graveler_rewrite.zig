@@ -1,7 +1,7 @@
 const std = @import("std");
 
-const ATTEMPTS = 1_000_000_000;
-const ROLLS = 231;
+const ATTEMPTS: u64 = 1_000_000_000;
+const ROLLS: u64 = 231;
 
 pub fn main() !void {
     const start = try std.time.Instant.now();
@@ -12,8 +12,14 @@ pub fn main() !void {
     var highest: u8 = 0;
     var items: [4]u8 = undefined;
 
-    try print("Starting {} iterations of {} dice rolls to see how many lands on 1\n", .{ ATTEMPTS, ROLLS });
-    for (1..ATTEMPTS + 1) |attempt| {
+    try print(
+        "Starting {} iterations of {} dice rolls to see how many lands on 1\n",
+        .{
+            ATTEMPTS,
+            ROLLS,
+        },
+    );
+    for (0..ATTEMPTS) |attempt| {
         @memset(&items, 0);
         for (0..ROLLS) |_| {
             const idx = prng.random().int(u8) % 4; // Limit it to 0-3
@@ -21,18 +27,30 @@ pub fn main() !void {
         }
 
         if (attempt % (ATTEMPTS / 1_000) == 0) {
-            try print("- Attempt: {:12}\r", .{attempt});
+            try print("- Attempt: {:12}\r", .{attempt + 1});
         }
 
         if (items[0] > highest) {
             highest = items[0];
-            try print("- Attempt: {:12} | Rolls: {any:3}\r\n", .{ attempt, items });
+            try print(
+                "- Attempt: {:12} | Rolls: {any:3}\r\n",
+                .{
+                    attempt + 1,
+                    items,
+                },
+            );
         }
     }
 
     const end = try std.time.Instant.now();
     // It was in nano seconds soo
-    const elapsed = @as(f128, @floatFromInt(end.since(start))) / @as(f128, @floatFromInt(1_000_000_000));
+    const elapsed = @as(
+        f128,
+        @floatFromInt(end.since(start)),
+    ) / @as(
+        f128,
+        @floatFromInt(1_000_000_000),
+    );
     try print("\nHighest count of rolls that landed on 1: {}\r\n", .{highest});
     try print("Done! {d:9.5} seconds has elapsed\r\n", .{elapsed});
 }

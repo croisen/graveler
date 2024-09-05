@@ -11,13 +11,25 @@ how many of those would be 1s.
 ```bash
 git clone https://github.com/croisen/graveler.git
 cd graveler
-zig build --release=fast
-./zig-out/bin/graveler-rewrite
+zig build
 ```
+
+## Running
+
+After compiling the zig code there will be four main files in the zig-out/bin
+directory. Of course, the multi-threaded version is faster (well when I'd first
+done it, it was slower than the single threaded version)
+
+-   st-graveler-rewrite : Single threaded simulation of dice rolls (up to 1 billion)
+-   st-graveler-prz-procs : Single threaded simulation of move paralysis (up to 1 billion)
+-   mt-graveler-rewrite : Multi threaded simulation of dice rolls (up to 1 billion)
+-   mt-graveler-prz-procs : Multi threaded simulation of move paralysis (up to 1 billion)
 
 ## Some of my laptop specs
 
 IDK what to put here this is my first time participating in something like this
+
+-   OS: Arch Linux 6.10.7-arch1-1
 
 -   CPU: Intel(R) Pentium(R) Silver N5030 CPU @ 1.10GHz
 -   Cores: 4
