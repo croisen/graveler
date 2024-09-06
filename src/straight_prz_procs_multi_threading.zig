@@ -26,7 +26,13 @@ pub fn main() !void {
     try print("Now doing {} iterations per thread (total: {} threads)\r\n", .{ attempts_per_thread, cpu_count });
 
     for (0..cpu_count) |cpu|
-        try handles.insert(cpu, try std.Thread.spawn(.{}, loop, .{ cpu, attempts_per_thread, &highest.items }));
+        try handles.append(
+            try std.Thread.spawn(
+                .{},
+                loop,
+                .{ cpu, attempts_per_thread, &highest.items },
+            ),
+        );
 
     for (handles.items) |handle|
         handle.join();
@@ -77,7 +83,7 @@ pub fn loop(thread_id: usize, attempt_count: u64, highest: *[]u64) !void {
         }
 
         if (attempt % (attempt_count / 1_000) == 0) {
-            try print("T{:03} - Attempt: {:12}\r", .{ thread_id, attempt + 1 });
+            try print("T{:03} - Attempt: {:12}\r", .{ thread_id, attempt });
         }
 
         if (highest.*[thread_id] < straight_prz_procs) {
@@ -86,7 +92,7 @@ pub fn loop(thread_id: usize, attempt_count: u64, highest: *[]u64) !void {
                 "T{:03} - Attempt: {:12} | Highest Straight Paralysis Procs: {}\r\n",
                 .{
                     thread_id,
-                    attempt + 1,
+                    attempt,
                     straight_prz_procs,
                 },
             );

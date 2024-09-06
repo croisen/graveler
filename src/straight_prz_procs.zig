@@ -16,7 +16,9 @@ pub fn main() !void {
             ATTEMPTS,
         },
     );
-    for (0..ATTEMPTS) |attempt| {
+
+    var attempt: u64 = 1;
+    while (attempt <= ATTEMPTS) {
         var straight_prz_procs: u64 = 0;
 
         // See if the random 0-3 (inclusive) lands on a 0
@@ -28,7 +30,7 @@ pub fn main() !void {
         }
 
         if (attempt % (ATTEMPTS / 1_000) == 0) {
-            try print("- Attempt: {:12}\r", .{attempt + 1});
+            try print("- Attempt: {:12}\r", .{attempt});
         }
 
         if (highest < straight_prz_procs) {
@@ -36,11 +38,13 @@ pub fn main() !void {
             try print(
                 "- Attempt: {:12} | Highest Straight Paralysis Procs: {}\r\n",
                 .{
-                    attempt + 1,
+                    attempt,
                     straight_prz_procs,
                 },
             );
         }
+
+        attempt += 1;
     }
 
     const end = try std.time.Instant.now();

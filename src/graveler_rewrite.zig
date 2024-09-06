@@ -19,7 +19,8 @@ pub fn main() !void {
             ROLLS,
         },
     );
-    for (0..ATTEMPTS) |attempt| {
+    var attempt: u64 = 1;
+    while (attempt <= ATTEMPTS) {
         @memset(&items, 0);
         for (0..ROLLS) |_| {
             const idx = prng.random().int(u8) % 4; // Limit it to 0-3
@@ -27,7 +28,7 @@ pub fn main() !void {
         }
 
         if (attempt % (ATTEMPTS / 1_000) == 0) {
-            try print("- Attempt: {:12}\r", .{attempt + 1});
+            try print("- Attempt: {:12}\r", .{attempt});
         }
 
         if (items[0] > highest) {
@@ -35,11 +36,13 @@ pub fn main() !void {
             try print(
                 "- Attempt: {:12} | Rolls: {any:3}\r\n",
                 .{
-                    attempt + 1,
+                    attempt,
                     items,
                 },
             );
         }
+
+        attempt += 1;
     }
 
     const end = try std.time.Instant.now();

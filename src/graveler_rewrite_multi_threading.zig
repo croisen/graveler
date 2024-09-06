@@ -39,8 +39,7 @@ pub fn main() !void {
     );
 
     for (0..cpu_count) |cpu|
-        try handles.insert(
-            cpu,
+        try handles.append(
             try std.Thread.spawn(
                 .{},
                 loop,
